@@ -1,4 +1,6 @@
+import 'package:chiggy_wiggy/admin/enum/page_type.dart';
 import 'package:chiggy_wiggy/admin/model/product_model.dart';
+import 'package:chiggy_wiggy/admin/pages/products/product_add_edit.dart';
 import 'package:chiggy_wiggy/helper.dart';
 import 'package:flutter/material.dart';
 
@@ -32,7 +34,9 @@ class ProductItem extends StatelessWidget {
             width: 120,
             alignment: Alignment.center,
             child: Image.network(
-              model.images.first.src,
+              model.images.length > 0
+                  ? model.images.first.src
+                  : 'https://tfoodsquare.com/wp-content/uploads/2021/08/chicken-desi-300x300.jpg',
               height: 120,
               fit: BoxFit.fill,
             ),
@@ -56,7 +60,17 @@ class ProductItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProductAddEdit(
+                              pageType: PageType.Edit,
+                              model: model,
+                            ),
+                          ),
+                        );
+                      },
                       child: Icon(
                         Icons.edit_outlined,
                         size: 25,

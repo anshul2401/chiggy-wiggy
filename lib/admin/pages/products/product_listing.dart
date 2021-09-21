@@ -1,10 +1,15 @@
 import 'dart:async';
 
+import 'package:chiggy_wiggy/admin/enum/page_type.dart';
 import 'package:chiggy_wiggy/admin/model/product_model.dart';
 import 'package:chiggy_wiggy/admin/pages/base_page.dart';
+import 'package:chiggy_wiggy/admin/pages/products/product_add_edit.dart';
 import 'package:chiggy_wiggy/admin/pages/products/product_item.dart';
 import 'package:chiggy_wiggy/admin/provider/products_provider.dart';
+import 'package:chiggy_wiggy/helper.dart';
+import 'package:chiggy_wiggy/utils/form_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 class SortBy {
@@ -116,6 +121,27 @@ class _ProductListState extends AdminBasePageState<ProductList> {
       margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
       child: Row(
         children: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProductAddEdit(
+                    pageType: PageType.Add,
+                  ),
+                ),
+              );
+            },
+            child: Icon(
+              Icons.add,
+              size: 25,
+            ),
+            style: ElevatedButton.styleFrom(
+              shape: CircleBorder(),
+              padding: EdgeInsets.all(5),
+              primary: getThemeColor(),
+            ),
+          ),
           Flexible(
             child: TextField(
               controller: _searchQuery,

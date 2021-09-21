@@ -73,6 +73,7 @@ class ProductModel {
     if (this.images != null) {
       data['images'] = this.images.map((e) => e.toJson()).toList();
     }
+    return data;
   }
 }
 
@@ -96,7 +97,8 @@ class Categories {
 class Images {
   int id;
   String src;
-  Images({this.id, this.src});
+  bool isUpload = false;
+  Images({this.id, this.src, this.isUpload});
   Images.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     src = json['src'];
@@ -104,7 +106,7 @@ class Images {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
+    // data['id'] = this.id;
     data['src'] = this.src;
     return data;
   }

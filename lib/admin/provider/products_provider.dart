@@ -58,4 +58,67 @@ class ProductProvider with ChangeNotifier {
     _sortBy = sortBy;
     notifyListeners();
   }
+
+  createProduct(ProductModel model, Function onCallBack) async {
+    List<Images> productImages = List<Images>.empty(growable: true);
+    if (model.images.length > 0) {
+      await Future.forEach(model.images, (Images image) async {
+        String imageUrl = await _apiService.uploadImage(image.src);
+        if (imageUrl != null) {
+          productImages.add(Images(src: imageUrl));
+        }
+      });
+    }
+    if (model.images.length > 0) {
+      model.images = productImages;
+    }
+    ProductModel _productModel = await _apiService.createProduct(model);
+    if (_productModel != null) {
+      _productList.add(_productModel);
+      onCallBack(true);
+    } else {
+      onCallBack(false);
+    }
+    notifyListeners();
+  }
+
+  updateProduct(ProductModel model, Function onCallBack) async {
+    List<Images> productImages = List<Images>.empty(growable: true);
+    if (model.images.length > 0) {
+      await Future.forEach(model.images, (Images image) async {
+        if (image.isUpload) {
+          String imageUrl = await _apiService.uploadImage(image.src);
+          if (imageUrl != null) {
+            productImages.add(Images(src: imageUrl));
+          }
+        } else {
+          productImages.add(Images(src: image.src));
+        }
+      });
+    }
+    if (model.images.length > 0) {
+      model.images = productImages;
+    }
+    ProductModel _productModel = await _apiService.updateProduct(model);
+    if (_productModel != null) {
+      _productList.remove(model);
+      _productList.add(_productModel);
+      onCallBack(true);
+    } else {
+      onCallBack(false);
+    }
+    notifyListeners();
+  }
+
+  // deleteProduct(ProductModel model, Function onCallBack) async {
+  //   bool isDeleted = await _apiService.deleteProduct(model);
+  //   if (isDeleted) {
+  //     _categoryList.remove(model);
+
+  //     onCallBack(true);
+  //   } else {
+  //     onCallBack(false);
+  //   }
+  //   notifyListeners();
+  // }
 }

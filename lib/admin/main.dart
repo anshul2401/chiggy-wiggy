@@ -1,6 +1,10 @@
 import 'package:chiggy_wiggy/admin/pages/categories_page.dart';
+import 'package:chiggy_wiggy/admin/pages/customers/customer_list.dart';
+import 'package:chiggy_wiggy/admin/pages/orders/order_list.dart';
 import 'package:chiggy_wiggy/admin/pages/products/product_listing.dart';
 import 'package:chiggy_wiggy/admin/provider/category_provider.dart';
+import 'package:chiggy_wiggy/admin/provider/customers_provider.dart';
+import 'package:chiggy_wiggy/admin/provider/order_provider.dart';
 import 'package:chiggy_wiggy/admin/provider/products_provider.dart';
 import 'package:chiggy_wiggy/admin/provider/searchbar_provider.dart';
 import 'package:chiggy_wiggy/helper.dart';
@@ -30,6 +34,12 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => ProductProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => CustomerProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => OrderProvider(),
         )
       ],
       child: GetMaterialApp(
@@ -63,8 +73,8 @@ class _AdminHomePageState extends State<AdminHomePage> {
   List<Widget> _wodgetList = [
     CategoryList(),
     ProductList(),
-    CategoryList(),
-    CategoryList()
+    CustomerList(),
+    OrderList(),
   ];
   @override
   Widget build(BuildContext context) {
