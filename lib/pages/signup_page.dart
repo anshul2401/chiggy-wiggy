@@ -137,27 +137,27 @@ class _SignupPageState extends State<SignupPage> {
                               isApiCallProcess = false;
                             });
                             print(ret.toString());
-                            if (ret) {
-                              FormHelper.showMessage(
-                                context,
-                                'Chiggy Wiggy',
-                                'Registration Success',
-                                'OK',
-                                () {
-                                  Navigator.of(context).pop();
-                                },
-                              );
-                            } else {
-                              FormHelper.showMessage(
-                                context,
-                                'Chiggy Wiggy',
-                                'Email ID already registered',
-                                'OK',
-                                () {
-                                  Navigator.of(context).pop();
-                                },
-                              );
-                            }
+                            // if (ret) {
+                            //   FormHelper.showMessage(
+                            //     context,
+                            //     'Chiggy Wiggy',
+                            //     'Registration Success',
+                            //     'OK',
+                            //     () {
+                            //       Navigator.of(context).pop();
+                            //     },
+                            //   );
+                            // } else {
+                            //   FormHelper.showMessage(
+                            //     context,
+                            //     'Chiggy Wiggy',
+                            //     'Email ID already registered',
+                            //     'OK',
+                            //     () {
+                            //       Navigator.of(context).pop();
+                            //     },
+                            //   );
+                            // }
                           },
                         );
                       }

@@ -11,7 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class Cart extends StatefulWidget {
-  bool showBackButton;
+  final bool showBackButton;
   Cart(this.showBackButton);
 
   @override
@@ -20,21 +20,13 @@ class Cart extends StatefulWidget {
 
 class _CartState extends State<Cart> {
   bool isLoading = false;
-  void startTimer() {
-    Timer.periodic(const Duration(seconds: 2), (t) {
-      setState(() {
-        isLoading = true; //set loading to false
-      });
-      t.cancel(); //stops the timer
-    });
-  }
 
   @override
   void initState() {
     var cartItemList = Provider.of<CartProvider>(context, listen: false);
     cartItemList.resetStream();
     cartItemList.fetchCartItems();
-    startTimer();
+
     super.initState();
   }
 
@@ -158,52 +150,69 @@ class _CartState extends State<Cart> {
 
   Widget buildCartUI(BuildContext context) {
     return Consumer<CartProvider>(builder: (context, cartModel, child) {
-      if (cartModel.cartItems != null && cartModel.cartItems.length > 0) {
-        return SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
+      if (cartModel.cartItems != null) {
+        print(cartModel.cartItems);
+        return cartModel.cartItems.length > 0
+            ? SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      children: [
+                        getTopNav(context, 'Cart', getThemeColor(), Container(),
+                            widget.showBackButton),
+                        ListView.builder(
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            physics: ClampingScrollPhysics(),
+                            scrollDirection: Axis.vertical,
+                            itemCount: cartModel.cartItems.length,
+                            itemBuilder: (context, index) {
+                              return cartProductCard(
+                                  cartModel.cartItems[index]);
+                            }),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Column(
+                          children: [
+                            getNormalText('Total', 15, Colors.black),
+                            getBoldText('₹ ' + cartModel.totalAmount.toString(),
+                                18, Colors.black),
+                          ],
+                        ),
+                        FlatButton(
+                            color: Colors.red,
+                            shape: StadiumBorder(),
+                            padding: EdgeInsets.all(8),
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => VarifyAddress()));
+                            },
+                            child: getNormalText('Checkout', 15, Colors.white))
+                      ],
+                    ),
+                  ],
+                ),
+              )
+            : Column(
                 children: [
-                  getTopNav(context, 'Cart', getThemeColor(), Container(),
-                      widget.showBackButton),
-                  ListView.builder(
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      physics: ClampingScrollPhysics(),
-                      scrollDirection: Axis.vertical,
-                      itemCount: cartModel.cartItems.length,
-                      itemBuilder: (context, index) {
-                        return cartProductCard(cartModel.cartItems[index]);
-                      }),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
-                    children: [
-                      getNormalText('Total', 15, Colors.black),
-                      getBoldText('₹ ' + cartModel.totalAmount.toString(), 18,
-                          Colors.black),
-                    ],
+                  getTopNav(
+                    context,
+                    'Cart',
+                    getThemeColor(),
+                    Container(),
+                    widget.showBackButton,
                   ),
-                  FlatButton(
-                      color: Colors.red,
-                      shape: StadiumBorder(),
-                      padding: EdgeInsets.all(8),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => VarifyAddress()));
-                      },
-                      child: getNormalText('Checkout', 15, Colors.white))
+                  Center(
+                    child: CircularProgressIndicator(),
+                  ),
                 ],
-              ),
-            ],
-          ),
-        );
+              );
       }
 
       return Column(
@@ -216,8 +225,7 @@ class _CartState extends State<Cart> {
             widget.showBackButton,
           ),
           Center(
-            child:
-                isLoading ? Text('Cart is empty') : CircularProgressIndicator(),
+            child: Text('Cart is empty'),
           ),
         ],
       );

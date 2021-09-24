@@ -1,6 +1,11 @@
+import 'package:chiggy_wiggy/authentication/login_scree.dart';
 import 'package:chiggy_wiggy/helper.dart';
+import 'package:chiggy_wiggy/pages/home_pagee.dart';
+import 'package:chiggy_wiggy/pages/login_page.dart';
 import 'package:chiggy_wiggy/pages/order_page_list.dart';
+import 'package:chiggy_wiggy/pages/profile.dart';
 import 'package:chiggy_wiggy/utils/top_nav.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AccountPage extends StatefulWidget {
@@ -11,6 +16,7 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
+  final _auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,15 +41,34 @@ class _AccountPageState extends State<AccountPage> {
                   Colors.black,
                 ),
                 getCard('Order', 'Check my order', Icons.shopping_bag_rounded,
-                    OrderPage()),
+                    () {
+                  FirebaseAuth.instance.currentUser == null
+                      ? Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => LoginPage()))
+                      : Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => OrderPage(true)));
+                }),
+                getCard('Edit Profile', 'Edit my profile', Icons.edit, () {
+                  FirebaseAuth.instance.currentUser == null
+                      ? Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => LoginPage()))
+                      : Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EditProfile()));
+                }),
                 getCard(
-                  'Edit Profile',
-                  'Edit my profile',
-                  Icons.edit,
-                  OrderPage(),
+                  'Log out',
+                  'Log out from the application',
+                  Icons.logout_rounded,
+                  () async {
+                    await _auth.signOut();
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => HomePagee()));
+                  },
                 ),
-                getCard('Log out', 'Log out from the application',
-                    Icons.logout_rounded, OrderPage()),
               ],
             ),
           ),
@@ -52,12 +77,13 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
-  Widget getCard(String title, String subtitle, IconData icon, Widget method) {
+  Widget getCard(String title, String subtitle, IconData icon, Function fun) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => method));
-      },
+      // onTap: () {
+      //   Navigator.push(
+      //       context, MaterialPageRoute(builder: (context) => method));
+      // },
+      onTap: fun,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Card(

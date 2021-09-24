@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:chiggy_wiggy/config.dart';
 import 'package:chiggy_wiggy/models/cart_request_model.dart';
 import 'package:chiggy_wiggy/models/cart_response_model.dart';
@@ -12,14 +11,16 @@ import 'package:chiggy_wiggy/models/order_detail_model.dart';
 import 'package:chiggy_wiggy/models/product.dart';
 import 'package:chiggy_wiggy/pages/home_pagee.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class APIService {
-  Future<bool> createCustomer(CustomerModel model) async {
+  Future<CustomerModel> createCustomer(CustomerModel model) async {
     var authToken = base64.encode(
       utf8.encode(Config.key + ":" + Config.secret),
     );
 
     bool ret = false;
+    CustomerModel customerDetails;
     try {
       var response = await Dio().post(Config.url + Config.customerURL,
           data: model.toJson(),
@@ -29,18 +30,22 @@ class APIService {
           }));
 
       if (response.statusCode == 201) {
+        customerDetails = CustomerModel.fromJson(response.data);
         ret = true;
       }
+      return customerDetails;
     } on DioError catch (e) {
-      print(e.toString());
-      // print(e.toString());
+      if (e.response.statusCode == 400) {
+        ret = true;
+        customerDetails = await getCustomerIdByMobile(model.username);
+      }
       if (e.response.statusCode == 404) {
         ret = false;
       } else {
         ret = false;
       }
     }
-    return ret;
+    return customerDetails;
   }
 
   Future<List<Category>> getCategories() async {
@@ -277,9 +282,8 @@ class APIService {
     return responseModel;
   }
 
-  Future<void> getCustomerIdByMobile(String phone) async {
-    int userId;
-    List<CustomerDetailModel> list = [];
+  Future<CustomerModel> getCustomerIdByMobile(String phone) async {
+    CustomerModel customer;
     try {
       String url = Config.url +
           Config.customerURL +
@@ -290,17 +294,33 @@ class APIService {
             HttpHeaders.contentTypeHeader: "application/json",
           }));
       if (response.statusCode == 200) {
-        var data = (response.data as List).firstWhere(
-            (element) => element['billing']['first_name'] == 'Anshul');
-        userId = data['id'];
-        // Map<String, dynamic> dataaaa = data.first["billing"];
-        // print(dataaaa['first_name']);
-        // print(response.data);
+        customer = CustomerModel.fromJson((response.data as List)
+            .firstWhere((element) => element['username'] == phone));
       }
     } on DioError catch (e) {
       print(e.response);
     }
-    Config.userID = userId;
+
+    return customer;
+  }
+
+  Future<void> splashScreenFun() async {
+    FirebaseAuth _auth;
+
+    User _user;
+
+    _auth = FirebaseAuth.instance;
+    _user = _auth.currentUser;
+
+    if (_user == null) {
+      return HomePagee();
+    }
+    String phn = _user.phoneNumber.substring(1);
+
+    CustomerModel customer = await getCustomerIdByMobile(phn);
+
+    Config.userID = customer.id;
+
     return HomePagee();
   }
 }

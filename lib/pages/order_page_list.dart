@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class OrderPage extends StatefulWidget {
-  const OrderPage();
+  final bool getBackButton;
+  OrderPage(this.getBackButton);
 
   @override
   _OrderPageState createState() => _OrderPageState();
@@ -24,19 +25,47 @@ class _OrderPageState extends State<OrderPage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<OrderProvider>(builder: (context, orderModel, child) {
-      if (orderModel.allOrder != null && orderModel.allOrder.length > 0) {
-        return Scaffold(
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                getTopNav(context, 'Order', getThemeColor(), Container(), true),
-                getStatusRow(orderModel.allOrder),
-              ],
-            ),
-          ),
-        );
+      if (orderModel.allOrder != null) {
+        return orderModel.allOrder.length > 0
+            ? Scaffold(
+                body: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      getTopNav(context, 'Order', getThemeColor(), Container(),
+                          this.widget.getBackButton),
+                      getStatusRow(orderModel.allOrder),
+                    ],
+                  ),
+                ),
+              )
+            : Scaffold(
+                body: Column(
+                  children: [
+                    getTopNav(context, 'Order', getThemeColor(), Container(),
+                        this.widget.getBackButton),
+                    Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ],
+                ),
+              );
       }
-      return CircularProgressIndicator();
+      return Scaffold(
+        body: Column(
+          children: [
+            getTopNav(
+              context,
+              'Order',
+              getThemeColor(),
+              Container(),
+              this.widget.getBackButton,
+            ),
+            Center(
+              child: getBoldText('No Orders', 20, getThemeColor()),
+            ),
+          ],
+        ),
+      );
     });
   }
 
@@ -46,6 +75,7 @@ class _OrderPageState extends State<OrderPage> {
       physics: ScrollPhysics(),
       shrinkWrap: true,
       itemBuilder: (context, index) {
+        print(order[index].customerId);
         var data = order[index];
         return Card(
           child: Padding(

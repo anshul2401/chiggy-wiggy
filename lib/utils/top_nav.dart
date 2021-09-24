@@ -8,7 +8,7 @@ Stack getTopNav(BuildContext context, String heading, Color color,
     children: [
       Container(
         padding: EdgeInsets.all(0),
-        height: 65,
+        height: 95,
         width: MediaQuery.of(context).size.width,
         // decoration: BoxDecoration(
         //   gradient: LinearGradient(

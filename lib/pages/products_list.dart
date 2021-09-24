@@ -4,11 +4,13 @@ import 'package:chiggy_wiggy/models/cart_request_model.dart';
 import 'package:chiggy_wiggy/models/cart_response_model.dart';
 import 'package:chiggy_wiggy/models/product.dart';
 import 'package:chiggy_wiggy/pages/cart.dart';
+import 'package:chiggy_wiggy/pages/login_page.dart';
 import 'package:chiggy_wiggy/pages/product_details.dart';
 import 'package:chiggy_wiggy/provider/cart_provider.dart';
 import 'package:chiggy_wiggy/provider/loader_provider.dart';
 import 'package:chiggy_wiggy/utils/progressHUD.dart';
 import 'package:chiggy_wiggy/utils/top_nav.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -50,8 +52,15 @@ class _ProductListState extends State<ProductList> {
                   getThemeColor(),
                   MaterialButton(
                     onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => Cart(true)));
+                      FirebaseAuth.instance.currentUser == null
+                          ? Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginPage()))
+                          : Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Cart(true)));
                     },
                     color: Colors.white,
                     textColor: Colors.black,

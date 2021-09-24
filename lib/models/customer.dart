@@ -1,9 +1,12 @@
 class CustomerModel {
+  int id;
   String email;
   String firstName;
   String lastName;
   String password;
   Shipping shipping;
+  String username;
+  String role;
   // Billing billing;
   CustomerModel({
     this.email,
@@ -11,6 +14,8 @@ class CustomerModel {
     this.lastName,
     this.password,
     this.shipping,
+    this.username,
+    this.role,
     // this.billing,
   });
   Map<String, dynamic> toJson() {
@@ -20,11 +25,24 @@ class CustomerModel {
       'first_name': firstName,
       'last_name': lastName,
       'password': password,
-      'username': 'anshul',
+      'username': username,
       'shipping': shipping.toJson(),
+      'role': role
       // 'billing': billing.toJson()
     });
     return map;
+  }
+
+  CustomerModel.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    email = json['email'];
+    firstName = json['first_name'];
+    lastName = json['last_name'];
+    username = json['username'];
+    role = json['role'];
+    shipping = json['shipping'] != null
+        ? new Shipping.fromJson(json['shipping'])
+        : null;
   }
 }
 

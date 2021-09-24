@@ -22,7 +22,7 @@ class VarifyAddress extends BasePage {
 class _VarifyAddressState extends BasePageState<VarifyAddress> {
   @override
   void initState() {
-    var cartProvider = Provider.of<CartProvider>(context, listen: true);
+    var cartProvider = Provider.of<CartProvider>(context, listen: false);
     cartProvider.fetchShippingDetails();
     super.initState();
   }

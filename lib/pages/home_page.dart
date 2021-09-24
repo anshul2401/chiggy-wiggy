@@ -4,10 +4,12 @@ import 'package:chiggy_wiggy/helper.dart';
 import 'package:chiggy_wiggy/models/category.dart' as cat;
 import 'package:chiggy_wiggy/models/product.dart';
 import 'package:chiggy_wiggy/pages/cart.dart';
+import 'package:chiggy_wiggy/pages/login_page.dart';
 import 'package:chiggy_wiggy/pages/products_list.dart';
 import 'package:chiggy_wiggy/provider/cart_provider.dart';
 import 'package:chiggy_wiggy/utils/carausel.dart';
 import 'package:chiggy_wiggy/utils/card_carousel.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -326,8 +328,11 @@ class _HomePageState extends State<HomePage> {
               // ),
               MaterialButton(
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Cart(true)));
+                  FirebaseAuth.instance.currentUser == null
+                      ? Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => LoginPage()))
+                      : Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Cart(true)));
                 },
                 color: Colors.white,
                 textColor: Colors.black,

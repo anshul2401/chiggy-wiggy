@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "498639853813",
+    "project_id": "chiggy-wiggy-19d8b",
+    "storage_bucket": "chiggy-wiggy-19d8b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:498639853813:android:0f53baa0ab47f48c808dbc",
+        "android_client_info": {
+          "package_name": "com.example.chiggy_wiggy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "498639853813-c7u5v3nj9j10s7e450du6bnc2uvhaddp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.chiggy_wiggy",
+            "certificate_hash": "7a4dc26344211911a44a507732863202216371c9"
+          }
+        },
+        {
+          "client_id": "498639853813-ihkfebjrfujha4se0l5omj8nfffccaku.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDLit3yX4H7QrI9DvMvi0aWdAJi1ZHz8ho"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "498639853813-ihkfebjrfujha4se0l5omj8nfffccaku.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
