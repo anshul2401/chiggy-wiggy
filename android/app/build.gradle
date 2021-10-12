@@ -25,6 +25,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 
 android {
     compileSdkVersion 30
@@ -38,6 +39,7 @@ android {
         applicationId "com.example.chiggy_wiggy"
         minSdkVersion 21
         targetSdkVersion 30
+        multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -58,4 +60,5 @@ flutter {
 dependencies {
     implementation platform('com.google.firebase:firebase-bom:28.4.1')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.android.support:multidex:1.0.3'
 }

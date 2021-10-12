@@ -94,7 +94,7 @@ class _VarifyAddressState extends BasePageState<VarifyAddress> {
               onSaved: (newValue) {
                 email = newValue;
               },
-              initialValue: model.billing.email,
+              initialValue: model.email,
               validator: (value) {
                 if (value.isEmpty) {
                   return "This field is required";
@@ -184,36 +184,8 @@ class _VarifyAddressState extends BasePageState<VarifyAddress> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               FlatButton(
-                  onPressed: () {
-                    final isValidate = _form.currentState.validate();
-                    if (!isValidate) {
-                      return null;
-                    }
-
-                    _form.currentState.save();
-                    APIService _apiService = APIService();
-                    _apiService.updateCustomer(
-                      cust.CustomerModel(
-                        email: email,
-                        firstName: name,
-                        lastName: '',
-                        shipping: cust.Shipping(
-                          address1: address,
-                          address2: landmark,
-                          city: 'Indore',
-                          company: '',
-                          country: 'INDIA',
-                          firstName: name,
-                          lastName: '',
-                          postcode: pincode,
-                          state: 'MP',
-                        ),
-                      ),
-                    );
-                  },
-                  child: Text('update')),
-              FlatButton(
                 onPressed: () {
+                  updateUserDetails();
                   RazorpayService razorpayService = new RazorpayService();
 
                   razorpayService.initPaymentGateway(context);
@@ -225,6 +197,7 @@ class _VarifyAddressState extends BasePageState<VarifyAddress> {
               ),
               FlatButton(
                 onPressed: () {
+                  updateUserDetails();
                   var orderProvider =
                       Provider.of<CartProvider>(context, listen: false);
                   OrderModel orderModel = OrderModel();
@@ -246,6 +219,34 @@ class _VarifyAddressState extends BasePageState<VarifyAddress> {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  updateUserDetails() {
+    final isValidate = _form.currentState.validate();
+    if (!isValidate) {
+      return null;
+    }
+
+    _form.currentState.save();
+    APIService _apiService = APIService();
+    _apiService.updateCustomer(
+      cust.CustomerModel(
+        email: this.email,
+        firstName: this.name,
+        lastName: '',
+        shipping: cust.Shipping(
+          address1: this.address,
+          address2: this.landmark,
+          city: 'Indore',
+          company: '',
+          country: 'INDIA',
+          firstName: this.name,
+          lastName: '',
+          postcode: this.pincode,
+          state: 'MP',
+        ),
       ),
     );
   }

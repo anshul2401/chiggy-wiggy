@@ -4,8 +4,10 @@ import 'package:chiggy_wiggy/helper.dart';
 import 'package:chiggy_wiggy/main.dart';
 import 'package:chiggy_wiggy/models/customer.dart';
 import 'package:chiggy_wiggy/pages/home_pagee.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 enum MobileVerificationState {
   SHOW_MOBILE_FORM_STATE,
@@ -21,7 +23,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
   MobileVerificationState currentState =
       MobileVerificationState.SHOW_MOBILE_FORM_STATE;
   final otpController = TextEditingController();
@@ -40,22 +42,25 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     model = new CustomerModel();
     _apiService = APIService();
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      key: _scaffoldKey,
       child: Scaffold(
+        key: _scaffoldKey,
         body: Stack(
           alignment: Alignment.bottomCenter,
           children: [
             Container(
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
-              child:
-                  Image.asset('assets/images/img_6532.jpg', fit: BoxFit.fill),
+              child: Image.asset(
+                'assets/images/img_6532.jpg',
+                fit: BoxFit.fill,
+              ),
             ),
             showLoading
                 ? Center(child: CircularProgressIndicator())
@@ -313,10 +318,24 @@ class _LoginPageState extends State<LoginPage> {
 
         CustomerModel customer = await _apiService.createCustomer(model);
         Config.userID = customer.id;
+        addUser(customer.id.toString(), phoneController.text, 'Customer');
         setState(() {
           showLoading = false;
         });
-        print(customer.id);
+        // OneSignal.shared.init(
+        //   onSignalAppId,
+        // );
+        // await OneSignal.shared.getDeviceState().then((value) {
+        //   print(value.userId);
+        //   APIService.updateOneSignal(value.userId).then((value) => {
+        //         print(value),
+        //       });
+        // });
+        // OneSignal.shared.
+        // OneSignal.shared.setInFocusDisplayType(
+        //   OSNotificationDisplayType.notification,
+        // );
+
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => HomePagee()));
       }
@@ -328,5 +347,24 @@ class _LoginPageState extends State<LoginPage> {
       _scaffoldKey.currentState
           .showSnackBar(SnackBar(content: Text(e.message)));
     }
+  }
+
+  Future<void> addUser(String woocomuserId, String mobile, String role) async {
+    OneSignal.shared.init(
+      Config.oneSignalAppId,
+    );
+    var status = await OneSignal.shared.getPermissionSubscriptionState();
+
+    var playerId = status.subscriptionStatus.userId;
+
+    return users
+        .add({
+          'woocom_userid': woocomuserId,
+          'mobile': mobile,
+          'role': role,
+          'device': playerId,
+        })
+        .then((value) => print("User Added"))
+        .catchError((error) => print("Failed to add user: $error"));
   }
 }

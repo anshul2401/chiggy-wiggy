@@ -1,15 +1,21 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:chiggy_wiggy/helper.dart';
+import 'package:chiggy_wiggy/models/cart_request_model.dart';
+import 'package:chiggy_wiggy/models/cart_response_model.dart';
 import 'package:chiggy_wiggy/models/product.dart';
 import 'package:chiggy_wiggy/pages/product_details.dart';
+import 'package:chiggy_wiggy/provider/cart_provider.dart';
+import 'package:chiggy_wiggy/provider/loader_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class CardCarousal extends StatelessWidget {
   final List<Product> product;
   CardCarousal({this.product});
   @override
   Widget build(BuildContext context) {
+    var cartProvider = Provider.of<CartProvider>(context, listen: false);
     return Container(
       height: 100,
       width: MediaQuery.of(context).size.width,
@@ -22,6 +28,7 @@ class CardCarousal extends StatelessWidget {
           autoPlay: true,
         ),
         itemBuilder: (ctx, index, realIdx) {
+          CartItem cartItem = cartProvider.fetchItem(product[index].id);
           return GestureDetector(
             onTap: () {
               Navigator.push(
@@ -93,20 +100,24 @@ class CardCarousal extends StatelessWidget {
                       children: [
                         IconButton(
                           onPressed: () {
-                            //   if (cartItem != null) {
-                            //     Provider.of<LoaderProvider>(context, listen: false)
-                            //         .setLoadingStatus(true);
-                            //     Provider.of<CartProvider>(context, listen: false)
-                            //         .updateQty(cartItem.productId, cartItem.qty - 1);
+                            if (cartItem != null) {
+                              // Provider.of<LoaderProvider>(context,
+                              //         listen: false)
+                              //     .setLoadingStatus(true);
+                              // Provider.of<CartProvider>(context, listen: false)
+                              //     .updateQty(
+                              //         cartItem.productId, cartItem.qty - 1);
 
-                            //     var cartProvider =
-                            //         Provider.of<CartProvider>(context, listen: false);
+                              // var cartProvider = Provider.of<CartProvider>(
+                              //     context,
+                              //     listen: false);
 
-                            //     cartProvider.updateCart((val) {
-                            //       Provider.of<LoaderProvider>(context, listen: false)
-                            //           .setLoadingStatus(false);
-                            //     });
-                            //   } else {}
+                              // cartProvider.updateCart((val) {
+                              //   Provider.of<LoaderProvider>(context,
+                              //           listen: false)
+                              //       .setLoadingStatus(false);
+                              // });
+                            } else {}
                           },
                           icon: Icon(
                             Icons.remove,
@@ -114,8 +125,7 @@ class CardCarousal extends StatelessWidget {
                           color: Colors.black,
                         ),
                         Text(
-                          // cartItem == null ? '0' : cartItem.qty.toString(),
-                          '0',
+                          cartItem == null ? '0' : cartItem.qty.toString(),
                           style: GoogleFonts.varelaRound(
                             textStyle: TextStyle(
                                 fontSize: 18,
@@ -125,33 +135,40 @@ class CardCarousal extends StatelessWidget {
                         ),
                         IconButton(
                           onPressed: () {
-                            // if (cartItem != null) {
-                            //   Provider.of<LoaderProvider>(context, listen: false)
-                            //       .setLoadingStatus(true);
-                            //   Provider.of<CartProvider>(context, listen: false)
-                            //       .updateQty(cartItem.productId, cartItem.qty + 1);
+                            if (cartItem != null) {
+                              // Provider.of<LoaderProvider>(context,
+                              //         listen: false)
+                              //     .setLoadingStatus(true);
+                              // Provider.of<CartProvider>(context, listen: false)
+                              //     .updateQty(
+                              //         cartItem.productId, cartItem.qty + 1);
 
-                            //   var cartProvider =
-                            //       Provider.of<CartProvider>(context, listen: false);
+                              // var cartProvider = Provider.of<CartProvider>(
+                              //     context,
+                              //     listen: false);
 
-                            //   cartProvider.updateCart((val) {
-                            //     Provider.of<LoaderProvider>(context, listen: false)
-                            //         .setLoadingStatus(false);
-                            //   });
-                            // } else {
-                            //   CartProducts cartProducts = CartProducts();
-                            //   Provider.of<LoaderProvider>(context, listen: false)
-                            //       .setLoadingStatus(true);
+                              // cartProvider.updateCart((val) {
+                              //   Provider.of<LoaderProvider>(context,
+                              //           listen: false)
+                              //       .setLoadingStatus(false);
+                              // });
+                            } else {
+                              // CartProducts cartProducts = CartProducts();
+                              // Provider.of<LoaderProvider>(context,
+                              //         listen: false)
+                              //     .setLoadingStatus(true);
 
-                            //   var cartProvider =
-                            //       Provider.of<CartProvider>(context, listen: false);
-                            //   cartProducts.productId = widget.product.id;
-                            //   cartProducts.quantity = 1;
-                            //   cartProvider.addToCart(cartProducts, (val) {
-                            //     Provider.of<LoaderProvider>(context, listen: false)
-                            //         .setLoadingStatus(false);
-                            //   });
-                            // }
+                              // var cartProvider = Provider.of<CartProvider>(
+                              //     context,
+                              //     listen: false);
+                              // cartProducts.productId = product[index].id;
+                              // cartProducts.quantity = 1;
+                              // cartProvider.addToCart(cartProducts, (val) {
+                              //   Provider.of<LoaderProvider>(context,
+                              //           listen: false)
+                              //       .setLoadingStatus(false);
+                              // });
+                            }
                           },
                           icon: Icon(Icons.add),
                         ),

@@ -12,8 +12,11 @@ import 'package:chiggy_wiggy/models/product.dart';
 import 'package:chiggy_wiggy/pages/home_pagee.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart' as http;
 
 class APIService {
+  static var client = http.Client();
+
   Future<CustomerModel> createCustomer(CustomerModel model) async {
     var authToken = base64.encode(
       utf8.encode(Config.key + ":" + Config.secret),
@@ -147,8 +150,7 @@ class APIService {
   }
 
   Future<CartResponseModel> getCartItems() async {
-    CartResponseModel cartResponseModel =
-        CartResponseModel(data: [], status: false);
+    CartResponseModel cartResponseModel;
     try {
       String url = Config.url +
           Config.cartURL +
@@ -159,6 +161,7 @@ class APIService {
             HttpHeaders.contentTypeHeader: "application/json",
           }));
       if (response.statusCode == 200) {
+        print(response.data);
         cartResponseModel = CartResponseModel.fromJson(response.data);
       }
     } on DioError catch (e) {
@@ -172,15 +175,15 @@ class APIService {
     try {
       String url = Config.url +
           Config.customerURL +
-          "?user_id=${Config.userID}&consumer_key=${Config.key}&consumer_secret=${Config.secret}";
-
+          "/" +
+          Config.userID.toString() +
+          "?consumer_key=${Config.key}&consumer_secret=${Config.secret}";
       var response = await Dio().get(url,
           options: new Options(headers: {
             HttpHeaders.contentTypeHeader: "application/json",
           }));
       if (response.statusCode == 200) {
-        print(response.data[0]);
-        responseModel = CustomerDetailModel.fromJson(response.data[0]);
+        responseModel = CustomerDetailModel.fromJson(response.data);
       }
     } on DioError catch (e) {
       print(e.response);
@@ -214,9 +217,10 @@ class APIService {
     return isOrderCreated;
   }
 
-  Future<bool> createOrder(OrderModel model) async {
+  Future<List<dynamic>> createOrder(OrderModel model) async {
     model.customerId = Config.userID;
     bool isOrderCreated = false;
+    List ass = [];
     var authToken =
         base64.encode(utf8.encode(Config.key + ':' + Config.secret));
     try {
@@ -227,6 +231,11 @@ class APIService {
             HttpHeaders.contentTypeHeader: 'application/json',
           }));
       if (response.statusCode == 201) {
+        print(response.data['id']);
+
+        // sendNotification(['b0634531-dee7-42bc-abbe-6e89aac1d1d4'],
+        //     'Ding Dong Order!', 'Order Arrived');
+        ass.add(response.data['id']);
         isOrderCreated = true;
       }
     } on DioError catch (e) {
@@ -237,7 +246,9 @@ class APIService {
         print(e.response);
       }
     }
-    return isOrderCreated;
+    ass.add(isOrderCreated);
+    return ass;
+    // return isOrderCreated;
   }
 
   Future<List<OrderModel>> getOrder() async {
@@ -294,6 +305,8 @@ class APIService {
             HttpHeaders.contentTypeHeader: "application/json",
           }));
       if (response.statusCode == 200) {
+        print((response.data as List)
+            .firstWhere((element) => element['username'] == phone));
         customer = CustomerModel.fromJson((response.data as List)
             .firstWhere((element) => element['username'] == phone));
       }
@@ -322,5 +335,66 @@ class APIService {
     Config.userID = customer.id;
 
     return HomePagee();
+  }
+
+  static Future<bool> updateOneSignal(String playerId) async {
+    var authToken =
+        base64.encode(utf8.encode(Config.key + ':' + Config.secret));
+    Map<String, String> requestHeader = {
+      "Content-Type": "application/json",
+      "authorization": "Basic $authToken",
+    };
+    String userid = Config.userID.toString();
+    var url = Uri.https(
+      Config.baseUrl,
+      "wp-json/wc/v3/customers/$userid",
+    );
+    var response = await client.post(url,
+        headers: requestHeader,
+        body: jsonEncode({
+          "meta_data": [
+            {
+              "key": "one_signal_id",
+              "value": playerId,
+            }
+          ]
+        }));
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      print(response.body);
+      return false;
+    }
+  }
+
+  Future<http.Response> sendNotification(List<String> tokenIdList,
+      String contents, String heading, String orderid) async {
+    return await http.post(
+      Uri.parse('https://onesignal.com/api/v1/notifications'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        "app_id": Config
+            .oneSignalAppId, //kAppId is the App Id that one get from the OneSignal When the application is registered.
+
+        "include_player_ids":
+            tokenIdList, //tokenIdList Is the List of All the Token Id to to Whom notification must be sent.
+
+        // android_accent_color reprsent the color of the heading text in the notifiction
+        "android_accent_color": "FF9976D2",
+
+        "small_icon": "ic_stat_onesignal_default",
+
+        "large_icon":
+            "https://www.filepicker.io/api/file/zPloHSmnQsix82nlj9Aj?filename=name.jpg",
+
+        "headings": {"en": heading},
+
+        "contents": {"en": contents},
+
+        "data": {"orderid": orderid},
+      }),
+    );
   }
 }

@@ -18,6 +18,7 @@ class CartProvider with ChangeNotifier {
   bool get isOrderCreated => _isOrderCreated;
   OrderModel get orderModel => _orderModel;
   List<CartItem> get cartItems => _cartItems;
+  int orderId;
   double get totalRecords => _cartItems.length.toDouble();
   double get totalAmount => _cartItems != null
       ? _cartItems
@@ -71,6 +72,7 @@ class CartProvider with ChangeNotifier {
         _cartItems.addAll(value.data);
       }
     });
+
     notifyListeners();
   }
 
@@ -118,10 +120,8 @@ class CartProvider with ChangeNotifier {
     var isProdExist = _cartItems.firstWhere(
         (element) => element.productId == productId,
         orElse: () => null);
-
-    return isProdExist;
-
     notifyListeners();
+    return isProdExist;
   }
 
   fetchShippingDetails() async {
@@ -143,7 +143,7 @@ class CartProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void createOrder() async {
+  createOrder() async {
     if (_orderModel.shipping == null) {
       _orderModel.shipping = new Shipping();
     }
@@ -151,7 +151,7 @@ class CartProvider with ChangeNotifier {
       _orderModel.shipping = this.customerDetailModel.shipping;
     }
     if (_orderModel.lineItems == null) {
-      _orderModel.lineItems = new List<LineItems>();
+      _orderModel.lineItems = new List<LineItems>.empty(growable: true);
     }
 
     _cartItems.forEach((element) {
@@ -162,6 +162,7 @@ class CartProvider with ChangeNotifier {
     await _apiService.createOrder(orderModel).then((value) {
       if (value != null) {
         _isOrderCreated = true;
+        orderId = value[0];
         notifyListeners();
       }
     });

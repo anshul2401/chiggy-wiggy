@@ -151,7 +151,6 @@ class _CartState extends State<Cart> {
   Widget buildCartUI(BuildContext context) {
     return Consumer<CartProvider>(builder: (context, cartModel, child) {
       if (cartModel.cartItems != null) {
-        print(cartModel.cartItems);
         return cartModel.cartItems.length > 0
             ? SingleChildScrollView(
                 child: Column(

@@ -4,14 +4,21 @@ class CustomerDetailModel {
   int id;
   String firstName;
   String lastName;
+  String email;
   Billing billing;
   Shipping shipping;
   CustomerDetailModel(
-      {this.id, this.firstName, this.lastName, this.billing, this.shipping});
+      {this.id,
+      this.firstName,
+      this.lastName,
+      this.email,
+      this.billing,
+      this.shipping});
   CustomerDetailModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     firstName = json['first_name'];
     lastName = json['last_name'];
+    email = json['email'];
     billing =
         json['billing'] != null ? new Billing.fromJson(json['billing']) : null;
     shipping = json['shipping'] != null
